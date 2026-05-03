@@ -1,0 +1,597 @@
+{
+  "lastUpdated": "31/03/2026",
+  "latestTotal": 12661417,
+  "latestNewAccounts": 346406,
+  "history": [
+    {
+      "date": "31/12/2015",
+      "total": 1510864,
+      "newAccounts": 0
+    },
+    {
+      "date": "31/7/2016",
+      "total": 1628134,
+      "newAccounts": 117270
+    },
+    {
+      "date": "31/8/2016",
+      "total": 1642590,
+      "newAccounts": 14456
+    },
+    {
+      "date": "30/9/2016",
+      "total": 1657346,
+      "newAccounts": 14756
+    },
+    {
+      "date": "31/10/2016",
+      "total": 1671556,
+      "newAccounts": 14210
+    },
+    {
+      "date": "30/11/2016",
+      "total": 1690051,
+      "newAccounts": 18495
+    },
+    {
+      "date": "31/12/2016",
+      "total": 1712389,
+      "newAccounts": 22338
+    },
+    {
+      "date": "31/1/2017",
+      "total": 1723728,
+      "newAccounts": 11339
+    },
+    {
+      "date": "28/2/2017",
+      "total": 1740774,
+      "newAccounts": 17046
+    },
+    {
+      "date": "31/3/2017",
+      "total": 1761043,
+      "newAccounts": 20269
+    },
+    {
+      "date": "30/4/2017",
+      "total": 1774873,
+      "newAccounts": 13830
+    },
+    {
+      "date": "31/5/2017",
+      "total": 1792336,
+      "newAccounts": 17463
+    },
+    {
+      "date": "30/6/2017",
+      "total": 1810321,
+      "newAccounts": 17985
+    },
+    {
+      "date": "31/7/2017",
+      "total": 1828566,
+      "newAccounts": 18245
+    },
+    {
+      "date": "31/8/2017",
+      "total": 1849868,
+      "newAccounts": 21302
+    },
+    {
+      "date": "29/9/2017",
+      "total": 1866634,
+      "newAccounts": 16766
+    },
+    {
+      "date": "31/10/2017",
+      "total": 1883292,
+      "newAccounts": 16658
+    },
+    {
+      "date": "30/11/2017",
+      "total": 1901649,
+      "newAccounts": 18357
+    },
+    {
+      "date": "29/12/2017",
+      "total": 1921554,
+      "newAccounts": 19905
+    },
+    {
+      "date": "31/01/2018",
+      "total": 1950626,
+      "newAccounts": 29072
+    },
+    {
+      "date": "28/02/2018",
+      "total": 1970459,
+      "newAccounts": 19833
+    },
+    {
+      "date": "30/03/2018",
+      "total": 2011964,
+      "newAccounts": 41505
+    },
+    {
+      "date": "27/04/2018",
+      "total": 2035732,
+      "newAccounts": 23768
+    },
+    {
+      "date": "31/05/2018",
+      "total": 2052168,
+      "newAccounts": 16436
+    },
+    {
+      "date": "30/6/2018",
+      "total": 2068410,
+      "newAccounts": 16242
+    },
+    {
+      "date": "31/7/2018",
+      "total": 2090449,
+      "newAccounts": 22039
+    },
+    {
+      "date": "31/8/2018",
+      "total": 2109013,
+      "newAccounts": 18564
+    },
+    {
+      "date": "30/9/2018",
+      "total": 2124930,
+      "newAccounts": 15917
+    },
+    {
+      "date": "31/10/2018",
+      "total": 2145375,
+      "newAccounts": 20445
+    },
+    {
+      "date": "30/11/2018",
+      "total": 2167040,
+      "newAccounts": 21665
+    },
+    {
+      "date": "31/12/2018",
+      "total": 2182327,
+      "newAccounts": 15287
+    },
+    {
+      "date": "31/1/2019",
+      "total": 2197735,
+      "newAccounts": 15408
+    },
+    {
+      "date": "28/2/2019",
+      "total": 2212317,
+      "newAccounts": 14582
+    },
+    {
+      "date": "31/3/2019",
+      "total": 2233938,
+      "newAccounts": 21621
+    },
+    {
+      "date": "30/4/2019",
+      "total": 2251784,
+      "newAccounts": 17846
+    },
+    {
+      "date": "31/5/2019",
+      "total": 2269356,
+      "newAccounts": 17572
+    },
+    {
+      "date": "30/6/2019",
+      "total": 2284033,
+      "newAccounts": 14677
+    },
+    {
+      "date": "31/7/2019",
+      "total": 2302944,
+      "newAccounts": 18911
+    },
+    {
+      "date": "31/8/2019",
+      "total": 2321049,
+      "newAccounts": 18105
+    },
+    {
+      "date": "30/9/2019",
+      "total": 2337639,
+      "newAccounts": 16590
+    },
+    {
+      "date": "31/10/2019",
+      "total": 2342953,
+      "newAccounts": 5314
+    },
+    {
+      "date": "30/11/2019",
+      "total": 2359682,
+      "newAccounts": 16729
+    },
+    {
+      "date": "31/12/2019",
+      "total": 2374894,
+      "newAccounts": 15212
+    },
+    {
+      "date": "31/1/2020",
+      "total": 2384922,
+      "newAccounts": 10028
+    },
+    {
+      "date": "29/2/2020",
+      "total": 2403426,
+      "newAccounts": 18504
+    },
+    {
+      "date": "31/3/2020",
+      "total": 2435566,
+      "newAccounts": 32140
+    },
+    {
+      "date": "29/4/2020",
+      "total": 2472433,
+      "newAccounts": 36867
+    },
+    {
+      "date": "30/5/2020",
+      "total": 2506657,
+      "newAccounts": 34224
+    },
+    {
+      "date": "30/6/2020",
+      "total": 2541887,
+      "newAccounts": 35230
+    },
+    {
+      "date": "31/7/2020",
+      "total": 2569261,
+      "newAccounts": 27374
+    },
+    {
+      "date": "31/8/2020",
+      "total": 2597852,
+      "newAccounts": 28591
+    },
+    {
+      "date": "30/9/2020",
+      "total": 2629561,
+      "newAccounts": 31709
+    },
+    {
+      "date": "31/10/2020",
+      "total": 2666283,
+      "newAccounts": 36722
+    },
+    {
+      "date": "30/11/2020",
+      "total": 2707780,
+      "newAccounts": 41497
+    },
+    {
+      "date": "31/12/2020",
+      "total": 2771409,
+      "newAccounts": 63629
+    },
+    {
+      "date": "30/1/2021",
+      "total": 2858154,
+      "newAccounts": 86745
+    },
+    {
+      "date": "28/2/2021",
+      "total": 2915532,
+      "newAccounts": 57378
+    },
+    {
+      "date": "31/3/2021",
+      "total": 3029407,
+      "newAccounts": 113875
+    },
+    {
+      "date": "30/4/2021",
+      "total": 3140062,
+      "newAccounts": 110655
+    },
+    {
+      "date": "31/5/2021",
+      "total": 3254169,
+      "newAccounts": 114107
+    },
+    {
+      "date": "30/6/2021",
+      "total": 3394639,
+      "newAccounts": 140470
+    },
+    {
+      "date": "30/7/2021",
+      "total": 3496132,
+      "newAccounts": 101493
+    },
+    {
+      "date": "31/8/2021",
+      "total": 3616897,
+      "newAccounts": 120765
+    },
+    {
+      "date": "30/9/2021",
+      "total": 3731859,
+      "newAccounts": 114962
+    },
+    {
+      "date": "31/10/2021",
+      "total": 3862011,
+      "newAccounts": 130152
+    },
+    {
+      "date": "30/11/2021",
+      "total": 4083325,
+      "newAccounts": 221314
+    },
+    {
+      "date": "31/12/2021",
+      "total": 4310211,
+      "newAccounts": 226886
+    },
+    {
+      "date": "31/01/2022",
+      "total": 4505046,
+      "newAccounts": 194835
+    },
+    {
+      "date": "28/02/2022",
+      "total": 4716191,
+      "newAccounts": 211145
+    },
+    {
+      "date": "31/03/2022",
+      "total": 4986827,
+      "newAccounts": 270636
+    },
+    {
+      "date": "29/04/2022",
+      "total": 5218102,
+      "newAccounts": 231275
+    },
+    {
+      "date": "31/05/2022",
+      "total": 5694813,
+      "newAccounts": 476711
+    },
+    {
+      "date": "30/06/2022",
+      "total": 6161296,
+      "newAccounts": 466483
+    },
+    {
+      "date": "29/07/2022",
+      "total": 6357494,
+      "newAccounts": 196198
+    },
+    {
+      "date": "31/08/2022",
+      "total": 6510367,
+      "newAccounts": 152873
+    },
+    {
+      "date": "30/09/2022",
+      "total": 6609241,
+      "newAccounts": 98874
+    },
+    {
+      "date": "31/10/2022",
+      "total": 6709181,
+      "newAccounts": 99940
+    },
+    {
+      "date": "30/11/2022",
+      "total": 6797876,
+      "newAccounts": 88695
+    },
+    {
+      "date": "31/12/2022",
+      "total": 6897071,
+      "newAccounts": 99195
+    },
+    {
+      "date": "31/01/2023",
+      "total": 6933253,
+      "newAccounts": 36182
+    },
+    {
+      "date": "28/02/2023",
+      "total": 6997293,
+      "newAccounts": 64040
+    },
+    {
+      "date": "31/03/2023",
+      "total": 7037095,
+      "newAccounts": 39802
+    },
+    {
+      "date": "28/04/2023",
+      "total": 7060021,
+      "newAccounts": 22926
+    },
+    {
+      "date": "31/05/2023",
+      "total": 7164987,
+      "newAccounts": 104966
+    },
+    {
+      "date": "30/06/2023",
+      "total": 7311047,
+      "newAccounts": 146060
+    },
+    {
+      "date": "31/07/2023",
+      "total": 7461666,
+      "newAccounts": 150619
+    },
+    {
+      "date": "31/08/2023",
+      "total": 7650301,
+      "newAccounts": 188635
+    },
+    {
+      "date": "30/09/2023",
+      "total": 7823271,
+      "newAccounts": 172970
+    },
+    {
+      "date": "31/10/2023",
+      "total": 7445544,
+      "newAccounts": -377727
+    },
+    {
+      "date": "30/11/2023",
+      "total": 7252743,
+      "newAccounts": -192801
+    },
+    {
+      "date": "31/12/2023",
+      "total": 7292361,
+      "newAccounts": 39618
+    },
+    {
+      "date": "31/01/2024",
+      "total": 7417717,
+      "newAccounts": 125356
+    },
+    {
+      "date": "29/02/2024",
+      "total": 7530998,
+      "newAccounts": 113281
+    },
+    {
+      "date": "31/03/2024",
+      "total": 7694837,
+      "newAccounts": 163839
+    },
+    {
+      "date": "30/04/2024",
+      "total": 7805840,
+      "newAccounts": 111003
+    },
+    {
+      "date": "31/05/2024",
+      "total": 7938060,
+      "newAccounts": 132220
+    },
+    {
+      "date": "30/06/2024",
+      "total": 8044825,
+      "newAccounts": 106765
+    },
+    {
+      "date": "31/07/2024",
+      "total": 8375024,
+      "newAccounts": 330199
+    },
+    {
+      "date": "31/08/2024",
+      "total": 8706229,
+      "newAccounts": 331205
+    },
+    {
+      "date": "30/09/2024",
+      "total": 8864733,
+      "newAccounts": 158504
+    },
+    {
+      "date": "31/10/2024",
+      "total": 9021652,
+      "newAccounts": 156919
+    },
+    {
+      "date": "30/11/2024",
+      "total": 9157109,
+      "newAccounts": 135457
+    },
+    {
+      "date": "31/12/2024",
+      "total": 9297988,
+      "newAccounts": 140879
+    },
+    {
+      "date": "31/01/2025",
+      "total": 9378706,
+      "newAccounts": 80718
+    },
+    {
+      "date": "28/02/2025",
+      "total": 9528697,
+      "newAccounts": 149991
+    },
+    {
+      "date": "31/03/2025",
+      "total": 9686077,
+      "newAccounts": 157380
+    },
+    {
+      "date": "30/04/2025",
+      "total": 9880100,
+      "newAccounts": 194023
+    },
+    {
+      "date": "31/05/2025",
+      "total": 10070952,
+      "newAccounts": 190852
+    },
+    {
+      "date": "30/06/2025",
+      "total": 10269926,
+      "newAccounts": 198974
+    },
+    {
+      "date": "31/07/2025",
+      "total": 10496267,
+      "newAccounts": 226341
+    },
+    {
+      "date": "31/08/2025",
+      "total": 10753899,
+      "newAccounts": 257632
+    },
+    {
+      "date": "30/09/2025",
+      "total": 11043925,
+      "newAccounts": 290026
+    },
+    {
+      "date": "31/10/2025",
+      "total": 11354873,
+      "newAccounts": 310948
+    },
+    {
+      "date": "30/11/2025",
+      "total": 11592251,
+      "newAccounts": 237378
+    },
+    {
+      "date": "31/12/2025",
+      "total": 11871933,
+      "newAccounts": 279682
+    },
+    {
+      "date": "31/01/2026",
+      "total": 12116647,
+      "newAccounts": 244714
+    },
+    {
+      "date": "28/02/2026",
+      "total": 12315011,
+      "newAccounts": 198364
+    },
+    {
+      "date": "31/03/2026",
+      "total": 12661417,
+      "newAccounts": 346406
+    }
+  ]
+}
