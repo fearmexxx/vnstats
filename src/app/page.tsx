@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -19,6 +20,7 @@ const COLORS = [
 ];
 
 export default function Dashboard() {
+  const router = useRouter();
   const [aiInsight, setAiInsight] = useState<string>("");
   const [loadingAi, setLoadingAi] = useState(false);
 
@@ -162,7 +164,7 @@ export default function Dashboard() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {tableData.map((firm) => (
-                  <tr key={firm.id} className="group hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => window.location.href = `/firm/${firm.id}`}>
+                  <tr key={firm.id} className="group hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => router.push(`/firm/${firm.id}`)}>
                     <td className="px-6 py-4">
                       <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{firm.name}</div>
                       <div className="text-[10px] text-gray-400 font-medium uppercase">{firm.fullName}</div>

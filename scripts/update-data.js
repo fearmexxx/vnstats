@@ -4,11 +4,14 @@ const db = new Database('data.db');
 
 async function parseCount(text) {
   if (!text) return 0;
-  const match = text.match(/([\d.,]+)\s*([KMkmbB]?)/);
+  // Handle Vietnamese "Tr" for Million
+  let cleanText = text.replace(/,/g, '').replace(/Tr/i, 'M').trim();
+  
+  const match = cleanText.match(/([\d.]+)\s*([KMB]?)/i);
   if (!match) return 0;
   
-  let num = parseFloat(match[1].replace(/,/g, ''));
-  const unit = match[2].toUpperCase();
+  let num = parseFloat(match[1]);
+  const unit = (match[2] || '').toUpperCase();
   
   if (unit === 'K') num *= 1000;
   if (unit === 'M') num *= 1000000;
@@ -17,24 +20,34 @@ async function parseCount(text) {
   return Math.floor(num);
 }
 
-async function getStatsFromGoogle(page, query) {
+async function getStatsFromSearch(page, query) {
   try {
-    await page.goto(`https://www.google.com/search?q=${encodeURIComponent(query)}`, { waitUntil: 'networkidle' });
-    const results = await page.$$eval('div.g', (elements) => {
-      return elements.map(el => el.textContent).join(' ');
-    });
+    // Switch to Bing which is often more lenient than Google
+    await page.goto(`https://www.bing.com/search?q=${encodeURIComponent(query)}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(3000);
     
-    // Look for various patterns of follower/subscriber counts
-    // We prioritize patterns that include "verified", "official", or just high numbers
-    const followers = results.match(/([\d.,]+[KM]?)\s*(followers|subscribers|người theo dõi|đăng ký)/gi);
+    const content = await page.evaluate(() => document.body.innerText);
     
-    if (!followers) return null;
+    // Patterns for Vietnamese and English social metrics
+    const patterns = [
+      /([\d.,]+[KMTTr]?)\s*(followers|subscribers|người theo dõi|người đăng ký|đăng ký|likes)/gi,
+      /(Theo dõi|Followers):\s*([\d.,]+[KMTTr]?)/gi
+    ];
+    
+    let matches = [];
+    for (const pattern of patterns) {
+      const found = content.match(pattern);
+      if (found) matches = [...matches, ...found];
+    }
+    
+    if (matches.length === 0) return null;
 
-    // Convert all found matches to numbers and pick the highest one (likely the official page)
-    const numericValues = await Promise.all(followers.map(f => parseCount(f)));
-    const highest = Math.max(...numericValues);
-    
-    return highest > 0 ? highest : null;
+    const numericValues = await Promise.all(matches.map(async (m) => {
+      const clean = m.replace(/followers|subscribers|người theo dõi|người đăng ký|đăng ký|likes|Theo dõi|:/gi, '').trim();
+      return parseCount(clean);
+    }));
+
+    return Math.max(...numericValues);
   } catch (e) {
     console.error(`Error searching for ${query}:`, e.message);
     return null;
@@ -42,11 +55,10 @@ async function getStatsFromGoogle(page, query) {
 }
 
 async function updateData() {
-  console.log('Starting enhanced headless social crawl via Google Search...');
+  console.log('Starting enhanced headless social crawl via Bing Search...');
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-    viewport: { width: 1280, height: 800 }
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   });
   const page = await context.newPage();
 
@@ -64,16 +76,14 @@ async function updateData() {
   `);
 
   for (const firm of firms) {
-    console.log(`Processing Official Entity: ${firm.full_name} (${firm.id})...`);
+    console.log(`Processing ${firm.name} (${firm.id})...`);
     
-    // Improved Queries using Full Legal/Official Name
-    const fbCount = await getStatsFromGoogle(page, `site:facebook.com "${firm.full_name}" followers official`);
-    const ttCount = await getStatsFromGoogle(page, `site:tiktok.com "${firm.full_name}" followers official`);
-    const ytCount = await getStatsFromGoogle(page, `site:youtube.com "${firm.full_name}" subscribers official`);
+    const fbCount = await getStatsFromSearch(page, `site:facebook.com "${firm.name}" securities followers official`);
+    const ttCount = await getStatsFromSearch(page, `site:tiktok.com "${firm.name}" securities followers official`);
+    const ytCount = await getStatsFromSearch(page, `site:youtube.com "${firm.name}" securities subscribers official`);
 
     console.log(`-> ${firm.id} RESULTS: FB: ${fbCount || 'N/A'}, TT: ${ttCount || 'N/A'}, YT: ${ytCount || 'N/A'}`);
 
-    // If Google search fails to find a high enough number, we keep previous data or default to 0
     const lastData = db.prepare('SELECT * FROM social_metrics WHERE firm_id = ? ORDER BY date DESC LIMIT 1').get(firm.id);
     
     insertSocial.run(
