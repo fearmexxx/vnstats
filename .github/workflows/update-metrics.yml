@@ -2,8 +2,8 @@ name: Update Market Data
 
 on:
   schedule:
-    - cron: '0 0 10 * *' # 10th of every month
-  workflow_dispatch: # Allow manual trigger
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+  workflow_dispatch:
 
 jobs:
   update-data:
@@ -20,6 +20,9 @@ jobs:
       - name: Install dependencies
         run: npm install
         
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
       - name: Update Database
         run: node scripts/update-data.js
         env:
