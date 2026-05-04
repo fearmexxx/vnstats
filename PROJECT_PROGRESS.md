@@ -1,22 +1,20 @@
-# VNStats Project Progress - May 3, 2026
+# VNStats Project Progress - May 4, 2026
 
 ## 🟢 Completed Today
-- **Project Scaffold**: Next.js 14+ (App Router), Tailwind CSS, and Recharts integration.
-- **Data Persistence**: SQLite (`data.db`) implemented with tables for firms, social metrics, and market accounts.
-- **Excel Intelligence**: Parser script created to extract official market opening data and distribute it by firm market share.
-- **Navigation Fix**: All Top 15 firms now have functional dynamic detail pages accessible via the dashboard.
-- **Automation**: GitHub Actions workflow set up for weekly data updates (Node 24, Playwright, Write Permissions).
-- **Crawl Strategy v2**: Switched to Bing Search to avoid Google bot detection and added support for Vietnamese numerical suffixes (Tr, người theo dõi).
+- **Manual Data Entry System**: Created a dedicated Admin dashboard (`/admin`) for manual input of social media metrics (Facebook, TikTok, YouTube).
+- **Weekly Growth Engine**: Implemented a SQL-based growth analysis system using window functions (`LAG`) to calculate WoW/MoM growth directly from the database.
+- **Dynamic Routing & SSR**: Converted the main dashboard and firm detail pages to Server Components for real-time data fetching from SQLite.
+- **UI Refinement**: Enhanced the leaderboard table with growth indicators (↑/↓) and polished the firm detail pages with historical trend lines.
+- **Data Persistence**: Successfully migrated from JSON file storage to a robust SQLite architecture with `better-sqlite3` and `@libsql/client`.
 
-## 🔴 Remaining Issues (For Tomorrow)
-- **Social Link Accuracy**: Despite using official legal names, the automated search still occasionally captures low-follower "fan" or "fake" pages.
-- **Data Gaps**: Some firms still return "N/A" if the search snippet doesn't match our regex patterns.
-- **YouTube Metrics**: Currently using a mock percentage of FB followers; needs actual crawler data.
+## 🔴 Remaining Issues
+- **YouTube Historical Data**: Currently YouTube metrics are manually entered; need to ensure historical data is populated for meaningful trend lines.
+- **Security**: The `/admin` page is currently unprotected; should add a basic password or `INGEST_TOKEN` check for production.
 
 ## 🛠️ Strategy for Tomorrow
-1. **Hardcoded Official Links**: For the Top 15, we should create a mapping of their *exact* official social URLs to ensure 100% accuracy.
-2. **Direct Page Scraping**: Once we have the official URLs, update the crawler to visit the profile page directly and extract the number from the specific meta tags or DOM elements (bypassing search snippet ambiguity).
-3. **Analytics Edge**: Enhance the AI Predictive engine (Gemini) to use the real historical delta once the crawler has populated the DB with accurate week-1 vs week-2 data.
+1. **Enhanced Predictions**: Fine-tune the Gemini AI prompt in `/api/insights` to use the new growth metrics for more accurate firm-specific trajectories.
+2. **Export Features**: Add ability to export the monthly market report to PDF/Excel for institutional distribution.
+3. **News Integration**: Connect the news feed table to the SSC (State Securities Commission) RSS feed or official portals.
 
 ## 📝 Developer Notes
 - Database: `data.db`

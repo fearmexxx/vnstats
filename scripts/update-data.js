@@ -54,15 +54,89 @@ async function getStatsFromSearch(page, query) {
   }
 }
 
+async function getFBFollowers(page, url) {
+  if (!url) return null;
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(2000);
+    const content = await page.content();
+    
+    // Look for followers in the whole HTML
+    const patterns = [
+      /([\d.,]+[KMT]?)\s*followers/i,
+      /([\d.,]+[KMT]?)\s*người theo dõi/i,
+      /"follower_count":(\d+)/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = content.match(pattern);
+      if (match) return parseCount(match[1]);
+    }
+    return null;
+  } catch (e) {
+    console.error(`Error scraping FB ${url}:`, e.message);
+    return null;
+  }
+}
+
+async function getTikTokFollowers(page, url) {
+  if (!url) return null;
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(3000);
+    const content = await page.content();
+
+    const patterns = [
+      /([\d.,]+[KMT]?)\s*Followers/i,
+      /"followerCount":(\d+)/i,
+      /followerCount\\":(\d+)/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = content.match(pattern);
+      if (match) return parseCount(match[1]);
+    }
+    return null;
+  } catch (e) {
+    console.error(`Error scraping TikTok ${url}:`, e.message);
+    return null;
+  }
+}
+
+async function getYTSubscribers(page, url) {
+  if (!url) return null;
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(2000);
+    const content = await page.content();
+
+    const patterns = [
+      /([\d.,]+[KMT]?)\s*subscribers/i,
+      /([\d.,]+[KMT]?)\s*người đăng ký/i,
+      /"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([\d.,]+[KMT]?)\s*subscribers"/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = content.match(pattern);
+      if (match) return parseCount(match[1]);
+    }
+    return null;
+  } catch (e) {
+    console.error(`Error scraping YouTube ${url}:`, e.message);
+    return null;
+  }
+}
+
 async function updateData() {
-  console.log('Starting enhanced headless social crawl via Bing Search...');
+  console.log('Starting resilient social crawler...');
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    locale: 'vi-VN'
   });
   const page = await context.newPage();
 
-  const firms = db.prepare('SELECT id, name, full_name FROM firms').all();
+  const firms = db.prepare('SELECT id, name, full_name, facebook_url, tiktok_url, youtube_url FROM firms').all();
   const now = new Date();
   const currentDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
@@ -78,9 +152,24 @@ async function updateData() {
   for (const firm of firms) {
     console.log(`Processing ${firm.name} (${firm.id})...`);
     
-    const fbCount = await getStatsFromSearch(page, `site:facebook.com "${firm.name}" securities followers official`);
-    const ttCount = await getStatsFromSearch(page, `site:tiktok.com "${firm.name}" securities followers official`);
-    const ytCount = await getStatsFromSearch(page, `site:youtube.com "${firm.name}" securities subscribers official`);
+    // 1. Try direct scraping
+    let fbCount = await getFBFollowers(page, firm.facebook_url);
+    let ttCount = await getTikTokFollowers(page, firm.tiktok_url);
+    let ytCount = await getYTSubscribers(page, firm.youtube_url);
+
+    // 2. Fallback to Bing Search if direct scraping failed
+    if (!fbCount) {
+      console.log(`  Fallback searching FB for ${firm.name}...`);
+      fbCount = await getStatsFromSearch(page, `site:facebook.com "${firm.name}" securities followers official`);
+    }
+    if (!ttCount) {
+      console.log(`  Fallback searching TikTok for ${firm.name}...`);
+      ttCount = await getStatsFromSearch(page, `site:tiktok.com "${firm.name}" securities followers official`);
+    }
+    if (!ytCount) {
+      console.log(`  Fallback searching YouTube for ${firm.name}...`);
+      ytCount = await getStatsFromSearch(page, `site:youtube.com "${firm.name}" securities subscribers official`);
+    }
 
     console.log(`-> ${firm.id} RESULTS: FB: ${fbCount || 'N/A'}, TT: ${ttCount || 'N/A'}, YT: ${ytCount || 'N/A'}`);
 
@@ -94,7 +183,7 @@ async function updateData() {
       ytCount || lastData?.youtube_subscribers || 0
     );
     
-    await new Promise(r => setTimeout(r, 3000));
+    await new Promise(r => setTimeout(r, 2000));
   }
 
   await browser.close();
