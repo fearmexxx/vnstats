@@ -110,6 +110,22 @@ async function init() {
     }
   }
 
+  // Load Market Accounts
+  if (fs.existsSync('src/data/market-accounts.json')) {
+    console.log('Loading market accounts from JSON...');
+    const accounts = JSON.parse(fs.readFileSync('src/data/market-accounts.json', 'utf8'));
+    for (const h of accounts.history) {
+      if (db.isLocal) {
+        db.localDb.prepare('INSERT INTO market_accounts (date, total_accounts, new_accounts) VALUES (?, ?, ?)').run(h.date, h.total, h.newAccounts);
+      } else {
+        await db.execute({
+          sql: 'INSERT INTO market_accounts (date, total_accounts, new_accounts) VALUES (?, ?, ?)',
+          args: [h.date, h.total, h.newAccounts]
+        });
+      }
+    }
+  }
+
   console.log('Database initialization complete.');
 }
 
