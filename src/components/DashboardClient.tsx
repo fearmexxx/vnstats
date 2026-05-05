@@ -20,9 +20,10 @@ interface Props {
   firms: any[];
   socialMetrics: any[];
   marketAccounts: any[];
+  latestEarnings: Record<string, number>;
 }
 
-export default function DashboardClient({ firms, socialMetrics, marketAccounts }: Props) {
+export default function DashboardClient({ firms, socialMetrics, marketAccounts, latestEarnings }: Props) {
   const router = useRouter();
   const [aiInsight, setAiInsight] = useState<string>("");
   const [loadingAi, setLoadingAi] = useState(false);
@@ -47,7 +48,8 @@ export default function DashboardClient({ firms, socialMetrics, marketAccounts }
       fbGrowth: social.fbGrowth,
       ttGrowth: social.ttGrowth,
       ytGrowth: social.ytGrowth,
-      totalSocial: social.facebook + social.tiktok + social.youtube
+      totalSocial: social.facebook + social.tiktok + social.youtube,
+      earnings: latestEarnings[firm.id] || 0
     };
   }).sort((a, b) => (b.market_share || 0) - (a.market_share || 0));
 
@@ -170,6 +172,7 @@ export default function DashboardClient({ firms, socialMetrics, marketAccounts }
                 <tr className="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-widest font-black">
                   <th className="px-6 py-4">Firm Entity</th>
                   <th className="px-6 py-4 text-right">Mkt Share</th>
+                  <th className="px-6 py-4 text-right">Q1 Profit (B VND)</th>
                   <th className="px-6 py-4 text-right">Est. New Accounts</th>
                   <th className="px-6 py-4 text-right">Facebook</th>
                   <th className="px-6 py-4 text-right">TikTok</th>
@@ -188,6 +191,10 @@ export default function DashboardClient({ firms, socialMetrics, marketAccounts }
                     </td>
                     <td className="px-6 py-4 text-right">
                       <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold">{firm.market_share}%</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="text-sm font-bold text-indigo-600">{firm.earnings ? `${firm.earnings.toLocaleString()}` : '-'}</div>
+                      <div className="text-[10px] text-gray-400 font-bold uppercase">Billion VND</div>
                     </td>
                     <td className="px-6 py-4 text-right text-sm font-medium text-gray-700">
                       {firm.estNewAccounts.toLocaleString()}

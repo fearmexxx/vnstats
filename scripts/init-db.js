@@ -62,6 +62,15 @@ async function init() {
       total_accounts INTEGER,
       new_accounts INTEGER
     );
+
+    CREATE TABLE IF NOT EXISTS earnings (
+      firm_id TEXT,
+      quarter TEXT,
+      year INTEGER,
+      amount REAL,
+      PRIMARY KEY (firm_id, quarter, year),
+      FOREIGN KEY (firm_id) REFERENCES firms(id)
+    );
   `;
 
   if (db.isLocal) {
@@ -76,36 +85,41 @@ async function init() {
 
   // Initial Data
   const firmsData = [
-    { id: 'VPS', name: 'VPS', fullName: 'VPS Securities', share: 15.32 },
-    { id: 'SSI', name: 'SSI', fullName: 'SSI Securities', share: 11.14 },
-    { id: 'TCBS', name: 'TCBS', fullName: 'Techcom Securities', share: 8.85 },
-    { id: 'VCI', name: 'VCI', fullName: 'Vietcap Securities', share: 7.35 },
-    { id: 'HSC', name: 'HSC', fullName: 'Ho Chi Minh City Securities', share: 7.30 },
-    { id: 'MBS', name: 'MBS', fullName: 'MB Securities', share: 5.29 },
-    { id: 'VND', name: 'VND', fullName: 'VNDIRECT Securities', share: 4.78 },
-    { id: 'KIS', name: 'KIS', fullName: 'KIS Vietnam Securities', share: 3.21 },
-    { id: 'VPBANKS', name: 'VPBankS', fullName: 'VPBank Securities', share: 2.94 },
-    { id: 'VCBS', name: 'VCBS', fullName: 'Vietcombank Securities', share: 2.87 },
-    { id: 'MAS', name: 'MAS', fullName: 'Mirae Asset Securities', share: 2.70 },
-    { id: 'FPTS', name: 'FPTS', fullName: 'FPT Securities', share: 2.50 },
-    { id: 'DNSE', name: 'DNSE', fullName: 'DNSE Securities', share: 2.30 },
-    { id: 'BSC', name: 'BSC', fullName: 'BIDV Securities', share: 2.10 },
-    { id: 'ACBS', name: 'ACBS', fullName: 'ACB Securities', share: 1.90 },
+    { id: 'VPS', name: 'VPS', fullName: 'VPS Securities', share: 15.32, earnings: 1547 },
+    { id: 'SSI', name: 'SSI', fullName: 'SSI Securities', share: 11.14, earnings: 1593 },
+    { id: 'TCBS', name: 'TCBS', fullName: 'Techcom Securities', share: 8.85, earnings: 1458 },
+    { id: 'VCI', name: 'VCI', fullName: 'Vietcap Securities', share: 7.35, earnings: 404 },
+    { id: 'HSC', name: 'HSC', fullName: 'Ho Chi Minh City Securities', share: 7.30, earnings: 363 },
+    { id: 'MBS', name: 'MBS', fullName: 'MB Securities', share: 5.29, earnings: 368 },
+    { id: 'VND', name: 'VND', fullName: 'VNDIRECT Securities', share: 4.78, earnings: 681 },
+    { id: 'KIS', name: 'KIS', fullName: 'KIS Vietnam Securities', share: 3.21, earnings: 254 },
+    { id: 'VPBANKS', name: 'VPBankS', fullName: 'VPBank Securities', share: 2.94, earnings: 514 },
+    { id: 'VCBS', name: 'VCBS', fullName: 'Vietcombank Securities', share: 2.87, earnings: 100 },
+    { id: 'MAS', name: 'MAS', fullName: 'Mirae Asset Securities', share: 2.70, earnings: 247 },
+    { id: 'FPTS', name: 'FPTS', fullName: 'FPT Securities', share: 2.50, earnings: 200 },
+    { id: 'DNSE', name: 'DNSE', fullName: 'DNSE Securities', share: 2.30, earnings: 100 },
+    { id: 'BSC', name: 'BSC', fullName: 'BIDV Securities', share: 2.10, earnings: 120 },
+    { id: 'ACBS', name: 'ACBS', fullName: 'ACB Securities', share: 1.90, earnings: 303 },
   ];
 
   console.log('Inserting seed data...');
   for (const f of firmsData) {
     if (db.isLocal) {
-      db.localDb.prepare('INSERT INTO firms (id, name, full_name) VALUES (?, ?, ?)').run(f.id, f.name, f.fullName);
-      db.localDb.prepare('INSERT INTO market_shares (firm_id, quarter, year, percentage) VALUES (?, ?, ?, ?)').run(f.id, 'Q1', 2026, f.share);
+      db.localDb.prepare('INSERT OR IGNORE INTO firms (id, name, full_name) VALUES (?, ?, ?)').run(f.id, f.name, f.fullName);
+      db.localDb.prepare('INSERT OR REPLACE INTO market_shares (firm_id, quarter, year, percentage) VALUES (?, ?, ?, ?)').run(f.id, 'Q1', 2026, f.share);
+      db.localDb.prepare('INSERT OR REPLACE INTO earnings (firm_id, quarter, year, amount) VALUES (?, ?, ?, ?)').run(f.id, 'Q1', 2026, f.earnings);
     } else {
       await db.execute({
-        sql: 'INSERT INTO firms (id, name, full_name) VALUES (?, ?, ?)',
+        sql: 'INSERT OR IGNORE INTO firms (id, name, full_name) VALUES (?, ?, ?)',
         args: [f.id, f.name, f.fullName]
       });
       await db.execute({
-        sql: 'INSERT INTO market_shares (firm_id, quarter, year, percentage) VALUES (?, ?, ?, ?)',
+        sql: 'INSERT OR REPLACE INTO market_shares (firm_id, quarter, year, percentage) VALUES (?, ?, ?, ?)',
         args: [f.id, 'Q1', 2026, f.share]
+      });
+      await db.execute({
+        sql: 'INSERT OR REPLACE INTO earnings (firm_id, quarter, year, amount) VALUES (?, ?, ?, ?)',
+        args: [f.id, 'Q1', 2026, f.earnings]
       });
     }
   }
@@ -116,10 +130,10 @@ async function init() {
     const accounts = JSON.parse(fs.readFileSync('src/data/market-accounts.json', 'utf8'));
     for (const h of accounts.history) {
       if (db.isLocal) {
-        db.localDb.prepare('INSERT INTO market_accounts (date, total_accounts, new_accounts) VALUES (?, ?, ?)').run(h.date, h.total, h.newAccounts);
+        db.localDb.prepare('INSERT OR REPLACE INTO market_accounts (date, total_accounts, new_accounts) VALUES (?, ?, ?)').run(h.date, h.total, h.newAccounts);
       } else {
         await db.execute({
-          sql: 'INSERT INTO market_accounts (date, total_accounts, new_accounts) VALUES (?, ?, ?)',
+          sql: 'INSERT OR REPLACE INTO market_accounts (date, total_accounts, new_accounts) VALUES (?, ?, ?)',
           args: [h.date, h.total, h.newAccounts]
         });
       }

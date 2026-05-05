@@ -29,6 +29,13 @@ export interface MarketAccount {
   new_accounts: number;
 }
 
+export interface Earning {
+  firm_id: string;
+  quarter: string;
+  year: number;
+  amount: number;
+}
+
 export async function getFirms(): Promise<Firm[]> {
   const result = await db.execute(`
     SELECT f.*, ms.percentage as market_share 
@@ -158,4 +165,18 @@ export async function getSocialMetricsWithGrowth(): Promise<any[]> {
     ttGrowth: row.prev_tt ? (((row.tiktok_followers as number - (row.prev_tt as number)) / (row.prev_tt as number)) * 100).toFixed(1) : '0',
     ytGrowth: row.prev_yt ? (((row.youtube_subscribers as number - (row.prev_yt as number)) / (row.prev_yt as number)) * 100).toFixed(1) : '0'
   }));
+}
+
+export async function getLatestEarnings(): Promise<Record<string, number>> {
+  const result = await db.execute(`
+    SELECT firm_id, amount 
+    FROM earnings 
+    WHERE quarter = 'Q1' AND year = 2026
+  `);
+  
+  const earnings: Record<string, number> = {};
+  result.rows.forEach(row => {
+    earnings[row.firm_id as string] = row.amount as number;
+  });
+  return earnings;
 }

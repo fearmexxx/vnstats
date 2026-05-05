@@ -86,3 +86,45 @@ export async function saveFirmChannels(formData: FormData) {
     return { error: `Server Error: ${error.message}` };
   }
 }
+
+export async function saveEarnings(formData: FormData) {
+  const earningsData = formData.get('earnings') as string;
+  const quarter = formData.get('quarter') as string;
+  const year = parseInt(formData.get('year') as string);
+  
+  if (!earningsData || !quarter || !year) {
+    return { error: 'Earnings data, quarter, and year are required' };
+  }
+
+  const earnings = JSON.parse(earningsData);
+
+  try {
+    for (const [firmId, amount] of Object.entries(earnings) as any) {
+      await db.execute({
+        sql: `
+          INSERT INTO earnings (firm_id, quarter, year, amount)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(firm_id, quarter, year) DO UPDATE SET
+            amount = excluded.amount
+        `,
+        args: [
+          firmId,
+          quarter,
+          year,
+          parseFloat(amount) || 0
+        ]
+      });
+    }
+
+    revalidatePath('/');
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (error: any) {
+    console.error('SERVER_ACTION_ERROR [saveEarnings]:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
+    return { error: `Server Error: ${error.message}` };
+  }
+}

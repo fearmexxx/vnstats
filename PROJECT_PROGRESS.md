@@ -1,23 +1,23 @@
-# VNStats Project Progress - May 4, 2026
+# VNStats Project Progress - May 5, 2026
 
 ## 🟢 Completed Today
-- **Manual Data Entry System**: Created a dedicated Admin dashboard (`/admin`) for manual input of social media metrics (Facebook, TikTok, YouTube).
-- **Mock Data Cleanup**: Successfully removed all mock social metrics for April and May 2026. The system now only contains real data entered manually starting from May 5, 2026.
-- **Weekly Growth Engine**: Implemented a SQL-based growth analysis system using window functions (`LAG`) to calculate WoW/MoM growth directly from the database.
-- **Dynamic Routing & SSR**: Converted the main dashboard and firm detail pages to Server Components for real-time data fetching from SQLite.
-- **UI Refinement**: Enhanced the leaderboard table with growth indicators (↑/↓) and polished the firm detail pages with historical trend lines.
-- **Data Persistence**: Successfully migrated from JSON file storage to a robust SQLite architecture with `better-sqlite3` and `@libsql/client`.
+- **Turso Cloud Migration**: Transitioned the database from local SQLite to Turso for persistence on Vercel.
+- **Social Channel Management**: Added a dedicated section in `/admin` to update firm-specific social media URLs.
+- **Automated Excel Sync**: Enhanced `scripts/parse-excel.js` to automatically push parsed March 2026 data to the Turso cloud database.
+- **Date Sorting Fix**: Implemented a custom chronological sorting algorithm in `lib/db.ts` to handle Vietnamese DD/MM/YYYY date formats correctly.
+- **CI/CD Optimization**: Updated GitHub Actions to sync metrics directly to Turso, removing dependencies on committing local `.db` files.
+- **Resilient Crawler**: Refactored `scripts/update-data.js` for asynchronous Turso operations and improved scraping reliability.
 
 ## 🔴 Remaining Issues
-- **YouTube Historical Data**: Currently YouTube metrics are manually entered; need to ensure historical data is populated for meaningful trend lines.
-- **Security**: The `/admin` page is currently unprotected; should add a basic password or `INGEST_TOKEN` check for production.
+- **YouTube Historical Data**: Need to backfill YouTube metrics for deeper trend analysis.
+- **Security**: The `/admin` page is currently unprotected; needs `INGEST_TOKEN` or basic auth.
 
-## 🛠️ Strategy for Tomorrow
-1. **Enhanced Predictions**: Fine-tune the Gemini AI prompt in `/api/insights` to use the new growth metrics for more accurate firm-specific trajectories.
-2. **Export Features**: Add ability to export the monthly market report to PDF/Excel for institutional distribution.
-3. **News Integration**: Connect the news feed table to the SSC (State Securities Commission) RSS feed or official portals.
+## 🛠️ Strategy for Next Session
+1. **Security Hardening**: Implement a simple authentication gate for the Admin dashboard.
+2. **AI Refinement**: Fine-tune Gemini insights to leverage the now-accurate March 2026 market account benchmarks.
+3. **News Feed**: Connect the dashboard to official SSC/HOSE RSS feeds.
 
 ## 📝 Developer Notes
-- Database: `data.db`
-- Critical Scripts: `scripts/update-data.js`, `scripts/init-db.js`
-- Target: Institutional-grade accuracy for the VPS, SSI, and TCBS "Big Three".
+- **Cloud Database**: Turso (`libsql://...`)
+- **Key Environment Variables**: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`
+- **Critical Scripts**: `scripts/init-db.js` (setup), `scripts/parse-excel.js` (sync accounts), `scripts/update-data.js` (crawler).
