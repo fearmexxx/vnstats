@@ -73,12 +73,20 @@ export async function getLatestSocialMetrics(): Promise<Record<string, SocialMet
 }
 
 export async function getMarketAccounts(): Promise<MarketAccount[]> {
-  const result = await db.execute('SELECT * FROM market_accounts ORDER BY date DESC');
+  const result = await db.execute('SELECT * FROM market_accounts');
+  
+  // Custom sort because SQLite doesn't understand DD/MM/YYYY for ordering
   return result.rows.map(row => ({
     date: row.date as string,
     total_accounts: row.total_accounts as number,
     new_accounts: row.new_accounts as number,
-  }));
+  })).sort((a, b) => {
+    const [d1, m1, y1] = a.date.split('/').map(Number);
+    const [d2, m2, y2] = b.date.split('/').map(Number);
+    const date1 = new Date(y1, m1 - 1, d1);
+    const date2 = new Date(y2, m2 - 1, d2);
+    return date2.getTime() - date1.getTime();
+  });
 }
 
 export async function getFirmHistoricalMetrics(firmId: string): Promise<any[]> {
