@@ -1,7 +1,8 @@
 import { createClient } from '@libsql/client';
 
 export const db = createClient({
-  url: 'file:data.db',
+  url: process.env.TURSO_DATABASE_URL || 'file:data.db',
+  authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
 export interface Firm {

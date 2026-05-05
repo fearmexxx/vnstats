@@ -9,30 +9,23 @@ A strategic dashboard for tracking the Top 15 securities firms in Vietnam.
 - **News Aggregator**: Monitors SSC and major financial news portals.
 
 ## Tech Stack
-- **Next.js 14+** (App Router)
+- **Next.js 15+** (App Router)
 - **Tailwind CSS**
+- **SQLite / Turso** (Database)
 - **Recharts** (Data Visualization)
-- **SheetJS** (Excel Parsing)
 
-## Setup
-1. Clone the repo.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Parse the Excel data (run whenever you have a new file):
-   ```bash
-   node scripts/parse-excel.js
-   ```
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
+## Database Architecture
+- **Local**: Uses local SQLite (`data.db`).
+- **Production**: Uses **Turso** for cloud persistence on Vercel.
+  - Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in Vercel environment variables.
 
 ## Deployment on Vercel
 1. Push to GitHub.
 2. Connect to Vercel.
-3. Add `INGEST_TOKEN` environment variable for the data update API.
+3. Add Environment Variables:
+   - `TURSO_DATABASE_URL`: libsql://your-db-name.turso.io
+   - `TURSO_AUTH_TOKEN`: your-auth-token
+   - `INGEST_TOKEN`: for secure API ingestion (optional)
 
 ## Updating Data
 - **Market Share**: Update `src/lib/constants.ts`.

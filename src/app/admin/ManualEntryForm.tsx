@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { saveSocialMetrics } from './actions';
+import { saveSocialMetrics, saveFirmChannels } from './actions';
 import { Firm, SocialMetric } from '@/lib/db';
-import { Save, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle2, Globe, TrendingUp } from 'lucide-react';
 
 interface Props {
   firms: Firm[];
@@ -11,7 +11,10 @@ interface Props {
 }
 
 export default function ManualEntryForm({ firms, latestMetrics }: Props) {
+  const [activeTab, setActiveTab] = useState<'metrics' | 'channels'>('metrics');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  // Metrics State
   const [metrics, setMetrics] = useState<Record<string, { facebook: string, tiktok: string, youtube: string }>>(
     firms.reduce((acc, firm) => {
       const m = latestMetrics[firm.id];
@@ -23,10 +26,23 @@ export default function ManualEntryForm({ firms, latestMetrics }: Props) {
       return acc;
     }, {} as any)
   );
+
+  // Channels State
+  const [channels, setChannels] = useState<Record<string, { facebook_url: string, tiktok_url: string, youtube_url: string }>>(
+    firms.reduce((acc, firm) => {
+      acc[firm.id] = {
+        facebook_url: firm.facebook_url || '',
+        tiktok_url: firm.tiktok_url || '',
+        youtube_url: firm.youtube_url || ''
+      };
+      return acc;
+    }, {} as any)
+  );
+
   const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (firmId: string, platform: 'facebook' | 'tiktok' | 'youtube', value: string) => {
+  const handleMetricChange = (firmId: string, platform: 'facebook' | 'tiktok' | 'youtube', value: string) => {
     setMetrics(prev => ({
       ...prev,
       [firmId]: {
@@ -36,7 +52,17 @@ export default function ManualEntryForm({ firms, latestMetrics }: Props) {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleChannelChange = (firmId: string, platform: 'facebook_url' | 'tiktok_url' | 'youtube_url', value: string) => {
+    setChannels(prev => ({
+      ...prev,
+      [firmId]: {
+        ...prev[firmId],
+        [platform]: value
+      }
+    }));
+  };
+
+  const handleMetricsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
@@ -48,33 +74,48 @@ export default function ManualEntryForm({ firms, latestMetrics }: Props) {
     const result = await saveSocialMetrics(formData);
     
     if (result.success) {
-      setStatus({ type: 'success', message: 'Data saved successfully!' });
+      setStatus({ type: 'success', message: 'Metrics saved successfully!' });
     } else {
-      setStatus({ type: 'error', message: result.error || 'Failed to save data' });
+      setStatus({ type: 'error', message: result.error || 'Failed to save metrics' });
+    }
+    setLoading(false);
+  };
+
+  const handleChannelsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus(null);
+
+    const formData = new FormData();
+    formData.append('channels', JSON.stringify(channels));
+
+    const result = await saveFirmChannels(formData);
+    
+    if (result.success) {
+      setStatus({ type: 'success', message: 'Channel URLs updated successfully!' });
+    } else {
+      setStatus({ type: 'error', message: result.error || 'Failed to update channels' });
     }
     setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="date" className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none">Reporting Date (End of Week/Month)</label>
-          <input 
-            id="date"
-            type="date" 
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="mt-1 block w-full md:w-48 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-            required
-          />
-        </div>
-        <button 
-          type="submit"
-          disabled={loading}
-          className="flex items-center justify-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all disabled:opacity-50"
+    <div className="space-y-6">
+      {/* Tab Switcher */}
+      <div className="flex p-1 bg-gray-100 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab('metrics')}
+          className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'metrics' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
         >
-          {loading ? 'Saving...' : <><Save className="w-5 h-5" /> Save All Metrics</>}
+          <TrendingUp className="w-4 h-4" />
+          Update Metrics
+        </button>
+        <button
+          onClick={() => setActiveTab('channels')}
+          className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold text-sm transition-all ${activeTab === 'channels' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          <Globe className="w-4 h-4" />
+          Update Channels
         </button>
       </div>
 
@@ -85,57 +126,150 @@ export default function ManualEntryForm({ firms, latestMetrics }: Props) {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-widest font-black">
-                <th className="px-6 py-4">Firm</th>
-                <th className="px-6 py-4">Facebook Followers</th>
-                <th className="px-6 py-4">TikTok Followers</th>
-                <th className="px-6 py-4">YouTube Subscribers</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {firms.map((firm) => (
-                <tr key={firm.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-gray-900">{firm.name}</div>
-                    <div className="text-[10px] text-gray-400 font-medium uppercase">{firm.id}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <input 
-                      type="number"
-                      value={metrics[firm.id]?.facebook}
-                      onChange={(e) => handleInputChange(firm.id, 'facebook', e.target.value)}
-                      placeholder="e.g. 452000"
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <input 
-                      type="number"
-                      value={metrics[firm.id]?.tiktok}
-                      onChange={(e) => handleInputChange(firm.id, 'tiktok', e.target.value)}
-                      placeholder="e.g. 120000"
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black transition-all"
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <input 
-                      type="number"
-                      value={metrics[firm.id]?.youtube}
-                      onChange={(e) => handleInputChange(firm.id, 'youtube', e.target.value)}
-                      placeholder="e.g. 45000"
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </form>
+      {activeTab === 'metrics' ? (
+        <form onSubmit={handleMetricsSubmit} className="space-y-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="date" className="text-[10px] uppercase font-black text-gray-400 tracking-widest leading-none">Reporting Date</label>
+              <input 
+                id="date"
+                type="date" 
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="mt-1 block w-full md:w-48 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                required
+              />
+            </div>
+            <button 
+              type="submit"
+              disabled={loading}
+              className="flex items-center justify-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all disabled:opacity-50"
+            >
+              {loading ? 'Saving...' : <><Save className="w-5 h-5" /> Save All Metrics</>}
+            </button>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-widest font-black">
+                    <th className="px-6 py-4">Firm</th>
+                    <th className="px-6 py-4">Facebook Followers</th>
+                    <th className="px-6 py-4">TikTok Followers</th>
+                    <th className="px-6 py-4">YouTube Subscribers</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {firms.map((firm) => (
+                    <tr key={firm.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-gray-900">{firm.name}</div>
+                        <div className="text-[10px] text-gray-400 font-medium uppercase">{firm.id}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <input 
+                          type="number"
+                          value={metrics[firm.id]?.facebook}
+                          onChange={(e) => handleMetricChange(firm.id, 'facebook', e.target.value)}
+                          placeholder="e.g. 452000"
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <input 
+                          type="number"
+                          value={metrics[firm.id]?.tiktok}
+                          onChange={(e) => handleMetricChange(firm.id, 'tiktok', e.target.value)}
+                          placeholder="e.g. 120000"
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <input 
+                          type="number"
+                          value={metrics[firm.id]?.youtube}
+                          onChange={(e) => handleMetricChange(firm.id, 'youtube', e.target.value)}
+                          placeholder="e.g. 45000"
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={handleChannelsSubmit} className="space-y-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Firm Social Channels</h3>
+              <p className="text-sm text-gray-500">Update official URLs for each platform.</p>
+            </div>
+            <button 
+              type="submit"
+              disabled={loading}
+              className="flex items-center justify-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all disabled:opacity-50"
+            >
+              {loading ? 'Saving...' : <><Save className="w-5 h-5" /> Update All Channels</>}
+            </button>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-widest font-black">
+                    <th className="px-6 py-4">Firm</th>
+                    <th className="px-6 py-4">Facebook URL</th>
+                    <th className="px-6 py-4">TikTok URL</th>
+                    <th className="px-6 py-4">YouTube URL</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {firms.map((firm) => (
+                    <tr key={firm.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-gray-900">{firm.name}</div>
+                        <div className="text-[10px] text-gray-400 font-medium uppercase">{firm.id}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <input 
+                          type="url"
+                          value={channels[firm.id]?.facebook_url}
+                          onChange={(e) => handleChannelChange(firm.id, 'facebook_url', e.target.value)}
+                          placeholder="https://facebook.com/..."
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <input 
+                          type="url"
+                          value={channels[firm.id]?.tiktok_url}
+                          onChange={(e) => handleChannelChange(firm.id, 'tiktok_url', e.target.value)}
+                          placeholder="https://tiktok.com/@..."
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <input 
+                          type="url"
+                          value={channels[firm.id]?.youtube_url}
+                          onChange={(e) => handleChannelChange(firm.id, 'youtube_url', e.target.value)}
+                          placeholder="https://youtube.com/@..."
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </form>
+      )}
+    </div>
   );
 }

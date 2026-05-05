@@ -85,12 +85,10 @@ accounts.history.forEach(h => {
 });
 
 const insertSocial = db.prepare('INSERT INTO social_metrics (firm_id, date, facebook_followers, tiktok_followers, youtube_subscribers) VALUES (?, ?, ?, ?, ?)');
-Object.entries(social.firms).forEach(([id, data]) => {
-    // Current month as 2026-05
-    insertSocial.run(id, '2026-05', data.facebook, data.tiktok, Math.floor(data.facebook * 0.1)); // Mocking YouTube as 10% of FB for now
-    
-    // Add some "last month" data for MoM comparison
-    insertSocial.run(id, '2026-04', Math.floor(data.facebook * 0.95), Math.floor(data.tiktok * 0.9), Math.floor(data.facebook * 0.09));
-});
+// Mock data insertion removed to allow for real data entry from May 2026
+// Object.entries(social.firms).forEach(([id, data]) => {
+//     insertSocial.run(id, '2026-05', data.facebook, data.tiktok, Math.floor(data.facebook * 0.1));
+//     insertSocial.run(id, '2026-04', Math.floor(data.facebook * 0.95), Math.floor(data.tiktok * 0.9), Math.floor(data.facebook * 0.09));
+// });
 
 console.log('Database initialized and migrated successfully.');

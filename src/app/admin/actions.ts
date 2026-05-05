@@ -38,7 +38,51 @@ export async function saveSocialMetrics(formData: FormData) {
     revalidatePath('/admin');
     return { success: true };
   } catch (error: any) {
-    console.error('Failed to save metrics:', error);
-    return { error: error.message };
+    console.error('SERVER_ACTION_ERROR [saveSocialMetrics]:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
+    return { error: `Server Error: ${error.message}` };
+  }
+}
+
+export async function saveFirmChannels(formData: FormData) {
+  const channelsData = formData.get('channels') as string;
+  
+  if (!channelsData) {
+    return { error: 'Channels data is required' };
+  }
+
+  const channels = JSON.parse(channelsData);
+
+  try {
+    for (const [firmId, values] of Object.entries(channels) as any) {
+      await db.execute({
+        sql: `
+          UPDATE firms 
+          SET facebook_url = ?, tiktok_url = ?, youtube_url = ?
+          WHERE id = ?
+        `,
+        args: [
+          values.facebook_url || '',
+          values.tiktok_url || '',
+          values.youtube_url || '',
+          firmId
+        ]
+      });
+    }
+
+    revalidatePath('/');
+    revalidatePath('/admin');
+    revalidatePath(`/firm/[id]`, 'layout');
+    return { success: true };
+  } catch (error: any) {
+    console.error('SERVER_ACTION_ERROR [saveFirmChannels]:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
+    return { error: `Server Error: ${error.message}` };
   }
 }
