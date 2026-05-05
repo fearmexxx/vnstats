@@ -178,10 +178,12 @@ export default function DashboardClient({ firms, socialMetrics, marketAccounts }
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {tableData.map((firm) => (
+                {tableData.map((firm, index) => (
                   <tr key={firm.id} className="group hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => router.push(`/firm/${firm.id}`)}>
                     <td className="px-6 py-4">
-                      <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{firm.name}</div>
+                      <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {index + 1}. {firm.name}
+                      </div>
                       <div className="text-[10px] text-gray-400 font-medium uppercase">{firm.full_name}</div>
                     </td>
                     <td className="px-6 py-4 text-right">
