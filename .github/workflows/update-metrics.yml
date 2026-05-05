@@ -28,12 +28,9 @@ jobs:
       - name: Update Database
         run: node scripts/update-data.js
         env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           
-      - name: Commit and Push changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data.db
-          git commit -m "chore: automated data update [skip ci]" || echo "No changes to commit"
-          git push
+      - name: Status Check
+        run: echo "Database update via Turso completed."
